@@ -1,3 +1,6 @@
+import random
+
+
 # class Human:
 #     def __init__(self, name='Human'):
 #         self.name = name
@@ -8,27 +11,25 @@
 #         self.brand = brand
 #         self.passengers = []
 #
-#     def add_passengers(self, human):
+#     def add_passenger(self, human):
 #         self.passengers.append(human)
 #
 #     def print_passengers_names(self):
 #         if self.passengers != []:
-#             print(f"Names of {self.brand} passengers")
+#             print(f"Names of {self.brand} passengers:")
 #             for passenger in self.passengers:
 #                 print(passenger.name)
 #         else:
-#                 print(f"There are no passengers in {self.brand}")
+#             print(f"There are no passengers in {self.brand}")
 #
 #
 # petya = Human('Petya')
 # mari = Human('Mari')
 # car = Auto('Mercedes')
 #
-# car.add_passengers(petya)
-# car.add_passengers(mari)
+# car.add_passenger(petya)
+# car.add_passenger(mari)
 # car.print_passengers_names()
-#
-import random
 
 
 class Human:
@@ -38,8 +39,8 @@ class Human:
         self.gladness = 50
         self.satiety = 50
         self.job = job
-        self.home = home
         self.car = car
+        self.home = home
 
     def get_home(self):
         self.home = House()
@@ -48,7 +49,7 @@ class Human:
         self.car = Auto(brands_of_car)
 
     def get_job(self):
-        if self.car.drive()
+        if self.car.drive():
             pass
         else:
             self.to_repair()
@@ -61,7 +62,7 @@ class Human:
         else:
             if self.satiety >= 100:
                 self.satiety = 100
-            return
+                return
             self.satiety += 5
             self.home.food -= 5
 
@@ -72,9 +73,117 @@ class Human:
             if self.car.fuel < 20:
                 self.shopping('fuel')
                 return
-            self.money += self.job.salary
-            self.gladness -= self.job.gladness_less
-            self.satiety -= 4
+        self.money += self.job.salary
+        self.gladness -= self.job.gladness_less
+        self.satiety -= 4
+
+    def shopping(self, manage):
+
+        if self.car.drive():
+            pass
+        else:
+            if self.car.fuel < 20:
+                manage = 'fuel'
+            else:
+                self.to_repair()
+                return
+        if manage == 'fuel':
+            print('I bought fuel')
+            self.money -= 100
+            self.car.fuel += 100
+        elif manage == 'food':
+            print('I bought food')
+            self.money -= 50
+            self.home.food += 50
+        elif manage == 'delicacies':
+            print('I bought delicacies')
+            self.money -= 15
+            self.gladness += 10
+            self.satiety += 2
+
+    def chill(self):
+        self.gladness += 10
+        self.home.mess += 5
+
+    def clean_home(self):
+        self.gladness -= 5
+        self.home.mess = 0
+
+    def to_repair(self):
+        self.car.strangth += 100
+        self.money -= 50
+
+    def days_indexes(self, day):
+        day = f" Today the {day} of {self.name}'s life"
+        print(f"{day:=^50}", "\n")
+        human_indexes = self.name + "'s indexes"
+        print(f"{human_indexes:^50}", "\n")
+        print(f"Money - {self.money}")
+        print(f"Satiety - {self.satiety}")
+        print(f"Gladness - {self.gladness}")
+        home_indexes = "Home indexes"
+        print(f"{home_indexes:^50}", "\n")
+        print(f"Food - {self.home.food}")
+        print(f"Mess - {self.home.mess}")
+        car_indexes = f"{self.car.brand} car indexes"
+        print(f"{car_indexes:^50}", "\n")
+        print(f"fuel - {self.car.fuel}")
+        print(f"strength - {self.car.strength}")
+
+    def is_alive(self):
+        if self.gladness < 0:
+            print('Depression')
+            return False
+        if self.satiety < 0:
+            print('Dead...')
+            return False
+        if self.money < -500:
+            print('Bankrupt...')
+            return False
+
+    def live(self, day):
+        if self.is_alive() == False:
+            return False
+        if self.home is None:
+            print('Settled in the house')
+            self.get_home()
+        if self.car is None:
+            self.get_car()
+            print(f"I bought a car {self.car.brand}")
+        if self.job is None:
+            self.get_job()
+            print(f"I don`t have a job, going to get a job {self.job.job} with salary {self.job.salary}")
+        self.days_indexes(day)
+        dice = random.randint(1, 4)
+
+        if self.satiety < 20:
+            print('I`ll go eat')
+            self.eat()
+        elif self.gladness < 20:
+            if self.home.mess > 15:
+                print('I want to chill, but there is so mach mess... \n So I will clean the house')
+                self.clean_home()
+            else:
+                print('Let`s chill')
+                self.chill()
+        elif self.money < 0:
+            print('Start working')
+            self.work()
+        elif self.car.strength < 15:
+            print('I need to repair my car')
+            self.to_repair()
+        elif dice == 1:
+            print('Let`s chill')
+            self.chill()
+        elif dice == 2:
+            print('Start working')
+            self.work()
+        elif dice == 3:
+            print('Cleaning time')
+            self.clean_home()
+        elif dice == 4:
+            print('Time for treats!')
+            self.shopping(manage='delicacies')
 
 
 class Auto:
@@ -102,7 +211,7 @@ class House:
 
 job_list = {
     'Java developer': {'salary': 50, 'gladness_less': 10},
-    'Pyton developer': {'salary': 40, 'gladness_less': 3},
+    'Python developer': {'salary': 40, 'gladness_less': 3},
     'C++ developer': {'salary': 45, 'gladness_less': 25},
     'Rust developer': {'salary': 70, 'gladness_less': 1},
 }
@@ -119,3 +228,10 @@ class Job:
         self.job = random.choice(list(job_list))
         self.salary = job_list[self.job]['salary']
         self.gladness_less = job_list[self.job]['gladness_less']
+
+
+nick = Human(name='Nick')
+
+for day in range(1, 8):
+    if nick.live(day) == False:
+        break
